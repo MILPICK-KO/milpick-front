@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './milpick.css';
 
-const API_BASE_URL = 'http://api.milpick.flyahn06.com:5656';
+const API_BASE_URL = 'http://api.milpick.flyahn06.com:8080';
 
 function App() {
   const [apiStatus, setApiStatus] = useState('API 연결 확인 중…');
