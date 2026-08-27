@@ -20,10 +20,7 @@
       <input type="text" id="major-input" placeholder="전공을 입력하세요 (예: 소프트웨어공학)" autocomplete="off">
       <button type="submit" id="major-submit">추천받기</button>
     </form>
-    <button class="link-btn" id="toggle-all-majors" type="button">전체 전공 목록에서 선택 ▾</button>
-    <div class="chip-box" id="all-majors-box">
-      <div class="chip-row" id="all-majors-chips"></div>
-    </div>
+
     <div class="hero-hint" id="hero-hint">전공을 입력하면 관련 키워드를 자동으로 추천합니다</div>
   </div>
 </header>
@@ -68,9 +65,11 @@
       <div class="chip-row" id="exclude-chips">
         <span class="chip-empty">추가한 제외 조건이 여기에 표시됩니다</span>
       </div>
-      <button class="link-btn" id="toggle-all-exclusions" type="button">전체 결격 조건 목록에서 선택 ▾</button>
-      <div class="chip-box" id="all-exclusions-box">
-        <div class="chip-row" id="all-exclusions-chips"></div>
+      <button class="link-btn" id="toggle-common-exclusions" type="button">자주 찾는 제외 조건 목록에서 선택 ▾</button>
+      <div class="chip-box" id="common-exclusions-box">
+        <div class="chip-row" id="common-exclusions-chips">
+          <!-- 향후 JS에서 색각이상, 디스크 등의 하드코딩된 목록을 여기에 렌더링합니다 -->
+        </div>
       </div>
     </div>
   </section>
@@ -113,6 +112,43 @@
   </section>
 
 </div>
+
+  <!-- 검색 결과 카드 템플릿 (JS에서 복제하여 사용) -->
+  <template id="result-card-template">
+    <div class="result-card">
+      <div class="result-header">
+        <span class="specialty-code" data-field="specialty_code"></span>
+        <h3 class="specialty-name" data-field="specialty_name"></h3>
+        <span class="badge recruitment-type" data-field="recruitment_type"></span>
+      </div>
+      <p class="duty-desc" data-field="duty_description"></p>
+      
+      <div class="result-details">
+        <div class="detail-row">
+          <span class="label">지원요건</span> 
+          <span class="desc" data-field="qualification_description"></span>
+        </div>
+        <div class="detail-row">
+          <span class="label">신체조건</span> 
+          <span class="desc" data-field="physical_condition_raw"></span>
+        </div>
+        <div class="detail-row">
+          <span class="label">관련자격</span> 
+          <span class="desc" data-field="certifications"></span>
+        </div>
+      </div>
+      
+      <!-- 특수 모집구분 안내 (조건 충족 시 JS에서 display: block 전환) -->
+      <div class="alert warning special-req-alert" style="display: none;">
+        <strong>안내:</strong> 해당 특기는 신체조건 외에도 실기/면접이나 특수 자격요건(단증, 어학점수 등)이 필요할 수 있으니 병무청 모집요강을 반드시 추가로 확인하세요.
+      </div>
+      
+      <!-- 전공 필수 경고 (조건 충족 시 JS에서 display: block 전환) -->
+      <div class="alert danger major-req-alert" style="display: none;">
+        <strong>주의:</strong> 전공 필수(major_required) 특기입니다. 본인의 전공과 무관할 경우 관련 자격증을 별도로 취득해야 지원이 가능합니다.
+      </div>
+    </div>
+  </template>
 
 <footer>
   <span>MILPICK</span>
