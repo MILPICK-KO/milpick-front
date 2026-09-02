@@ -5,6 +5,13 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['ddns.flyahn06.com']
+    allowedHosts: ['milpicktest.flyahn06.com', 'ddns.flyahn06.com', 'all', 'code.flyahn06.com'],
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   }
 })

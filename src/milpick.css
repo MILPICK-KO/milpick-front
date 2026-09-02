@@ -14,6 +14,8 @@
   --alert-bg: #fbeee9;
   --match: #3f7a50;
   --match-bg: #edf5ee;
+  --school: #3f627a;
+  --school-bg: #edf5ee;
   --radius: 10px;
   --radius-sm: 6px;
   --display: 'Oswald', sans-serif;
@@ -75,7 +77,7 @@ h1.brand span{ color:var(--brass); }
 
 .link-btn{
   margin-top:10px; background:none; border:none; color:var(--text-dim);
-  font-size:13px; cursor:pointer; padding:0;
+  font-size:11px; cursor:pointer; padding:0;
   text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--border-strong);
 }
 .link-btn:hover{ color:var(--brass); }
@@ -89,7 +91,7 @@ h1.brand span{ color:var(--brass); }
 
 /* ---------- Sections ---------- */
 section.step{ margin-bottom:28px; }
-.step-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
+.step-head{ margin-bottom:10px; }
 .step-num{
   font-family:var(--mono); font-size:11px; color:var(--brass);
   border:1px solid var(--border-strong); border-radius:4px; padding:2px 6px;
@@ -100,8 +102,9 @@ section.step{ margin-bottom:28px; }
 .step-desc{ font-size:13px; color:var(--text-dim); margin:0 0 12px; }
 
 .panel{
-  background:var(--surface); border:1px solid var(--border);
+  background:var(--surface); border:none;
   border-radius:var(--radius); padding:18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
 }
 
 /* chips */
@@ -221,6 +224,8 @@ section.step{ margin-bottom:28px; }
 .warn.special .mark{ color:var(--alert); }
 .warn.major{ background:var(--match-bg); color:#2e5c3b; }
 .warn.major .mark{ color:var(--match); }
+.warn.school{ background:var(--school-bg); color:#2e475c; }
+.warn.school .mark{ color:var(--school); }
 
 .empty-state, .loading-state{
   text-align:center; padding:48px 20px; color:var(--text-dim);
@@ -234,3 +239,36 @@ footer{
   display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:16px;
 }
 
+@keyframes fadeSlideDown {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.step {
+  animation: fadeSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.rec-type-card:hover {
+  transform: translateY(-2px);
+}
+
+
+/* Accordion Animation */
+.step-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step-content.open {
+  grid-template-rows: 1fr;
+}
+.step-content-inner {
+  overflow: hidden;
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
