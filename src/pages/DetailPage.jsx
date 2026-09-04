@@ -2,6 +2,20 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { formatText } from '../utils/formatters';
 
+const renderDutyDescription = (text) => {
+  if (!text) return '없음';
+  const formatted = text.replace(/(^|\s)ㅇ/g, '$1• ');
+  const lines = formatted.split('\n');
+  const firstIndex = lines.findIndex(line => line.trim().length > 0);
+
+  return lines.map((line, i) => (
+    <span key={i}>
+      {i === firstIndex ? <strong>{line}</strong> : line}
+      <br />
+    </span>
+  ));
+};
+
 export function DetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,7 +59,7 @@ export function DetailPage() {
               <div className="category-group" style={{ marginTop: '32px', marginBottom: '24px' }}>
                 <div className="category-label">하는 일</div>
                 <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--text)' }}>
-                  {formatText(result.duty_description)}
+                  {renderDutyDescription(result.duty_description)}
                 </div>
               </div>
 

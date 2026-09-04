@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { formatText } from '../utils/formatters';
 
 export function ResultCard({ result }) {
   const navigate = useNavigate();

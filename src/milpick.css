@@ -272,3 +272,102 @@ footer{
   gap: 10px;
   margin-bottom: 10px;
 }
+
+.mobile-br {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .mobile-br {
+    display: inline;
+  }
+}
+
+.rec-sub-tree {
+  margin-left: 20px;
+  padding-left: 16px;
+  border-left: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.rec-sub-tree.all-selected {
+  border-left-color: var(--brass);
+}
+
+@keyframes cardSelectPulse {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes chipPop {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.rec-type-card.selected {
+  animation: cardSelectPulse 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rec-type-card.selected .chip.selected {
+  animation: chipPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rec-card-content {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+}
+.rec-card-summary {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  word-break: keep-all;
+}
+.rec-card-detail {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+@media (max-width: 600px) {
+  .rec-sub-tree {
+    margin-left: 8px;
+    padding-left: 10px;
+    gap: 8px;
+  }
+  .rec-type-card {
+    padding: 12px 14px !important;
+    border-radius: 14px !important;
+  }
+  .rec-type-card button.chip {
+    margin-right: 12px !important;
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+  }
+  .rec-card-summary {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .rec-card-detail {
+    display: none;
+  }
+  .rec-type-card.selected .rec-card-detail {
+    display: block;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--text-dim);
+    animation: fadeSlideDown 0.25s ease forwards;
+  }
+}

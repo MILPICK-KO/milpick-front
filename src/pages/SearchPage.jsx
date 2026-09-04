@@ -7,7 +7,7 @@ const API_BASE_URL = '/api';
 
 export function SearchPage() {
   const {
-    apiStatus, setApiError, apiError,
+    setApiError, apiError,
     allFields, commonExclusions,
     recruitmentTypes, setRecruitmentTypes,
     majorInput, setMajorInput,
@@ -27,27 +27,77 @@ export function SearchPage() {
     unlockedStep, setUnlockedStep
   } = useSearch();
 
-  const REC_TYPES = ['전체', '기술행정병', '전문특기병', '취업맞춤특기병'];
+  const GENERAL_SUB_TYPES = ['기술행정병', '전문특기병', '취업맞춤특기병'];
   const SPECIAL_REC_TYPES = ['어학병', '카투사'];
-  const REC_TYPE_DESCRIPTIONS = {
-    '전체': '어학병, 카투사를 제외한 모든 모집분류에서 검색해요.',
-    '기술행정병': '본인이 보유한 자격증, 면허, 전공학과 등을 바탕으로 지원할 수 있어요.\n전문특기병만큼 선발이 까다롭진 않지만, 일부 특기는 전공뿐만 아니라 자격증을 요구하기도 해요.',
-    '전문특기병': '자격증이나 지원 분야와 관련된 전공을 필요로 하는 고도의 전문 임무를 수행해요.\n선발 과정에 시험과 면접이 포함될 수 있어요.',
-    '취업맞춤특기병': '고졸 이하자 등이 입대 전 본인의 적성에 맞는 기술훈련을 받고 이와 연계된 분야의 기술병으로 복무하는 제도에요.\n이를 통해 취업 등 안정적인 사회진출을 지원해요.',
-    '어학병': '대한민국 육군 내의 외국어 통역, 번역 및 외국어를 수반한 행정업무를 수행해요.\n해당 언어에 대한 자격증, 전공 혹은 유학 경험을 요구해요.',
-    '카투사': '카투사는 미8군에 증강된 한국군 육군 요원(한국군지원단 소속)으로 한미연합 관련 임무를 수행해요.\n영어 어학성적이 있어야만 지원이 가능해요.',
-    'default': '지원하고자 하는 모집 분류를 먼저 선택해 주세요.'
+  const REC_TYPE_INFO = {
+    '전체': {
+      detail: '어학병, 카투사를 제외한 전체 모집분류에서 검색해요.'
+    },
+    '기술행정병': {
+      summary: '자신의 학과나 자격증과 관련된 임무를 수행해요.',
+      detail: '본인이 보유한 자격증, 면허, 전공학과 등을 바탕으로 지원할 수 있어요.전문특기병만큼 선발이 까다롭진 않지만, 일부 특기는 전공뿐만 아니라 자격증을 요구하기도 해요.'
+    },
+    '전문특기병': {
+      summary: '해당 분야에 대한 고도의 임무를 수행해요.',
+      detail: '자격증이나 지원 분야와 관련된 전공을 필요로 하는 고도의 전문 임무를 수행해요. 선발 과정에 시험과 면접이 포함될 수 있어요.'
+    },
+    '취업맞춤특기병': {
+      summary: '기술훈련을 받고 해당 분야의 기술병으로 복무해요.',
+      detail: '고졸 이하자 등이 입대 전 본인의 적성에 맞는 기술훈련을 받고 이와 연계된 분야의 기술병으로 복무하는 제도에요. 이를 통해 취업 등 안정적인 사회진출을 지원해요.'
+    },
+    '어학병': {
+      summary: '어학 지식을 바탕으로 한 임무를 수행해요.',
+      detail: '대한민국 육군 내의 외국어 통역, 번역 및 외국어를 수반한 행정업무를 수행해요.해당 언어에 대한 자격증, 전공 혹은 유학 경험을 요구해요.'
+    },
+    '카투사': {
+      summary: '미군과 같이 복무해요.',
+      detail: '카투사는 미8군에 증강된 한국군 육군 요원(한국군지원단 소속)으로 한미연합 관련 임무를 수행해요. 영어 어학성적이 있어야만 지원이 가능해요.'
+    }
   };
 
-  const [activeDescType, setActiveDescType] = useState('default');
+  const resetConditions = () => {
+    // 2단계 (분야/전공) 초기화
+    setMajorInput('');
+    setRecommendedFields([]);
+    setSelectedFields([]);
+    setHasSearchedMajor(false);
+    setShowAllFields(false);
+
+    // 3단계 (신체조건/제외조건) 초기화
+    setHeight('');
+    setWeight('');
+    setGrade('');
+    setVision('');
+    setExcludeInput('');
+    setExcludeList([]);
+    setShowCommonExclusions(false);
+
+    // 검색 결과 및 단계 잠금 초기화
+    setSearchResults([]);
+    setHasSearched(false);
+    setResultTab('전체');
+    setSearchedRelation('none');
+    setUnlockedStep(1);
+  };
+
+  const cascadeTimers = useRef([]);
+
+  const clearCascadeTimers = () => {
+    cascadeTimers.current.forEach(t => clearTimeout(t));
+    cascadeTimers.current = [];
+  };
+
+  useEffect(() => {
+    return () => clearCascadeTimers();
+  }, []);
 
   const toggleRecType = (type) => {
-    setActiveDescType(type);
+    clearCascadeTimers();
+    resetConditions();
 
     if (type === '어학병' || type === '카투사') {
       if (recruitmentTypes.includes(type)) {
         setRecruitmentTypes([]);
-        setActiveDescType('default');
       } else {
         setRecruitmentTypes([type]);
       }
@@ -55,21 +105,44 @@ export function SearchPage() {
     }
 
     if (type === '전체') {
-      if (recruitmentTypes.includes('전체')) {
+      const isCurrentlyAll = recruitmentTypes.includes('전체') || 
+        GENERAL_SUB_TYPES.every(t => recruitmentTypes.includes(t));
+
+      if (isCurrentlyAll) {
         setRecruitmentTypes([]);
-        setActiveDescType('default');
       } else {
+        // 전체 먼저 선택 후, 기행병 -> 전특병 -> 취맞특병 순차적으로 선택되는 캐스케이드 모션
         setRecruitmentTypes(['전체']);
+
+        const t1 = setTimeout(() => {
+          setRecruitmentTypes(['전체', '기술행정병']);
+        }, 60);
+
+        const t2 = setTimeout(() => {
+          setRecruitmentTypes(['전체', '기술행정병', '전문특기병']);
+        }, 130);
+
+        const t3 = setTimeout(() => {
+          setRecruitmentTypes(['전체', '기술행정병', '전문특기병', '취업맞춤특기병']);
+        }, 200);
+
+        cascadeTimers.current = [t1, t2, t3];
       }
     } else {
-      let newTypes = recruitmentTypes.filter(t => t !== '전체' && t !== '어학병' && t !== '카투사');
-      if (newTypes.includes(type)) {
-        newTypes = newTypes.filter(t => t !== type);
-        if (newTypes.length === 0) setActiveDescType('default');
+      let currentSub = recruitmentTypes.filter(t => GENERAL_SUB_TYPES.includes(t));
+      if (currentSub.includes(type)) {
+        currentSub = currentSub.filter(t => t !== type);
       } else {
-        newTypes.push(type);
+        currentSub = [...currentSub, type];
       }
-      setRecruitmentTypes(newTypes);
+
+      if (currentSub.length === 0) {
+        setRecruitmentTypes([]);
+      } else if (GENERAL_SUB_TYPES.every(t => currentSub.includes(t))) {
+        setRecruitmentTypes(['전체', ...GENERAL_SUB_TYPES]);
+      } else {
+        setRecruitmentTypes(currentSub);
+      }
     }
   };
 
@@ -142,6 +215,16 @@ export function SearchPage() {
     }
   };
 
+  const togglePsychologicalCheck = () => {
+    const psychCond = commonExclusions.find(c => c.replace(/\s+/g, '') === '2차심리검사') || '2차심리검사';
+    const isChecked = excludeList.some(c => c.replace(/\s+/g, '') === '2차심리검사');
+    if (isChecked) {
+      setExcludeList(excludeList.filter(c => c.replace(/\s+/g, '') !== '2차심리검사'));
+    } else {
+      setExcludeList([...excludeList, psychCond]);
+    }
+  };
+
   const handleSearch = async (relationType = 'direct') => {
     const isSpecial = isSpecialRecType || recruitmentTypes.includes('어학병') || recruitmentTypes.includes('카투사');
     if (!isSpecial && selectedFields.length === 0 && excludeList.length === 0) {
@@ -209,7 +292,9 @@ export function SearchPage() {
     return (
       <div className="selected-summary">
         <strong>검색 조건:</strong>
-        {recruitmentTypes.length > 0 && <span> 모집분류({recruitmentTypes.join(', ')})</span>}
+        {recruitmentTypes.length > 0 && (
+          <span> 모집분류({recruitmentTypes.includes('전체') ? '전체' : recruitmentTypes.join(', ')})</span>
+        )}
         {selectedFields.length > 0 && <span> 분야({selectedFields.join(', ')})</span>}
         {excludeList.length > 0 && <span> 제외({excludeList.join(', ')})</span>}
         {height && <span> 신장({height}cm)</span>}
@@ -251,18 +336,51 @@ export function SearchPage() {
           </div>
           
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {REC_TYPES.map(type => (
+            {/* 상위: 일반 기술·특기병 (전체) */}
+            <div 
+              className={`rec-type-card ${recruitmentTypes.includes('전체') ? 'selected' : ''}`}
+              onClick={() => toggleRecType('전체')}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                padding: '18px 20px',
+                background: recruitmentTypes.includes('전체') ? 'var(--brass-bg)' : 'transparent',
+                borderRadius: '16px',
+                border: recruitmentTypes.includes('전체') ? '2px solid var(--brass)' : '1px solid var(--border)',
+                boxShadow: recruitmentTypes.includes('전체') ? '0 4px 12px rgba(156, 122, 30, 0.15)' : '0 2px 8px rgba(0,0,0,0.03)',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+            >
+              <button 
+                type="button" 
+                className={`chip ${recruitmentTypes.includes('전체') ? 'selected' : ''}`}
+                style={{ pointerEvents: 'none', margin: 0, flexShrink: 0, marginRight: '16px', fontWeight: '600' }}
+              >
+                전체
+              </button>
+              <div className="rec-card-content">
+                <div style={{ fontSize: '13.5px', color: 'var(--text-dim)', lineHeight: '1.45', wordBreak: 'keep-all' }}>
+                  {REC_TYPE_INFO['전체'].detail}
+                </div>
+              </div>
+            </div>
+
+            {/* 하위 세부 선택 항목 (전체 하위 위계 트리) */}
+            <div className={`rec-sub-tree ${recruitmentTypes.includes('전체') ? 'all-selected' : ''}`}>
+              {GENERAL_SUB_TYPES.map(type => (
                 <div 
                   key={type}
-                  className="rec-type-card"
+                  className={`rec-type-card ${recruitmentTypes.includes(type) ? 'selected' : ''}`}
                   onClick={() => toggleRecType(type)}
                   style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'space-between',
-                    padding: '20px',
+                    padding: '14px 16px',
                     background: recruitmentTypes.includes(type) ? 'var(--brass-bg)' : 'transparent',
-                    borderRadius: '16px',
+                    borderRadius: '14px',
                     border: recruitmentTypes.includes(type) ? '2px solid var(--brass)' : '1px solid var(--border)',
                     boxShadow: recruitmentTypes.includes(type) ? '0 4px 12px rgba(156, 122, 30, 0.15)' : '0 2px 8px rgba(0,0,0,0.03)',
                     cursor: 'pointer',
@@ -272,64 +390,67 @@ export function SearchPage() {
                   <button 
                     type="button" 
                     className={`chip ${recruitmentTypes.includes(type) ? 'selected' : ''}`}
-                    style={{ pointerEvents: 'none', margin: 0, flexShrink: 0, marginRight: '20px' }}
+                    style={{ pointerEvents: 'none', margin: 0, flexShrink: 0, marginRight: '16px', textAlign: 'center', lineHeight: '1.35' }}
                   >
-                    {type}
+                    {type === '취업맞춤특기병' ? (
+                      <>취업맞춤<span className="mobile-br"><br /></span>특기병</>
+                    ) : type}
                   </button>
-                  <div style={{ flex: 1, textAlign: 'left' }}>
-                    <div style={{ fontSize: '14px', color: 'var(--text-dim)', whiteSpace: 'pre-wrap', wordBreak: 'keep-all', lineHeight: '1.5' }}>
-                      {REC_TYPE_DESCRIPTIONS[type]}
+                  <div className="rec-card-content">
+                    <div className="rec-card-summary">
+                      {REC_TYPE_INFO[type].summary}
                     </div>
-                  </div>
-                </div>
-              ))}
-              
-              <div style={{ 
-                height: '1px', 
-                background: 'var(--border)', 
-                margin: '8px 0 6px 0' 
-              }} />
-
-              {SPECIAL_REC_TYPES.map(type => (
-                <div 
-                  key={type}
-                  className="rec-type-card"
-                  onClick={() => toggleRecType(type)}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    padding: '20px',
-                    background: recruitmentTypes.includes(type) ? 'var(--match-bg)' : 'transparent',
-                    borderRadius: '16px',
-                    border: recruitmentTypes.includes(type) ? '2px solid var(--match)' : '1px solid var(--border)',
-                    boxShadow: recruitmentTypes.includes(type) ? '0 4px 12px rgba(46, 92, 59, 0.15)' : '0 2px 8px rgba(0,0,0,0.03)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                  }}
-                >
-                  <button
-                    type="button"
-                    className={`chip ${recruitmentTypes.includes(type) ? 'selected' : ''}`}
-                    style={{
-                      pointerEvents: 'none', 
-                      margin: 0, 
-                      flexShrink: 0,
-                      marginRight: '20px',
-                      border: '1px solid var(--primary)',
-                      fontWeight: '600'
-                    }}
-                  >
-                    {type}
-                  </button>
-                  <div style={{ flex: 1, textAlign: 'left' }}>
-                    <div style={{ fontSize: '14px', color: 'var(--text-dim)', whiteSpace: 'pre-wrap', wordBreak: 'keep-all', lineHeight: '1.5' }}>
-                      {REC_TYPE_DESCRIPTIONS[type]}
+                    <div className="rec-card-detail">
+                      {REC_TYPE_INFO[type].detail}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
+            {SPECIAL_REC_TYPES.map(type => (
+              <div 
+                key={type}
+                className={`rec-type-card ${recruitmentTypes.includes(type) ? 'selected' : ''}`}
+                onClick={() => toggleRecType(type)}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  padding: '18px 20px',
+                  background: recruitmentTypes.includes(type) ? 'var(--match-bg)' : 'transparent',
+                  borderRadius: '16px',
+                  border: recruitmentTypes.includes(type) ? '2px solid var(--match)' : '1px solid var(--border)',
+                  boxShadow: recruitmentTypes.includes(type) ? '0 4px 12px rgba(46, 92, 59, 0.15)' : '0 2px 8px rgba(0,0,0,0.03)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
+                <button
+                  type="button"
+                  className={`chip ${recruitmentTypes.includes(type) ? 'selected' : ''}`}
+                  style={{
+                    pointerEvents: 'none', 
+                    margin: 0, 
+                    flexShrink: 0,
+                    marginRight: '16px',
+                    border: '1px solid var(--primary)',
+                    fontWeight: '600'
+                  }}
+                >
+                  {type}
+                </button>
+                <div className="rec-card-content">
+                  <div className="rec-card-summary">
+                    {REC_TYPE_INFO[type].summary}
+                  </div>
+                  <div className="rec-card-detail">
+                    {REC_TYPE_INFO[type].detail}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
             
             {unlockedStep === 1 && (
               <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
@@ -483,11 +604,42 @@ export function SearchPage() {
               </div>
             </div>
 
+            {/* 2차 심리검사 등 정밀검사 여부 체크박스 */}
+            <div style={{ marginTop: '18px' }}>
+              <label 
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: 'var(--text)',
+                  lineHeight: '1.4'
+                }}
+              >
+                <input 
+                  type="checkbox"
+                  checked={excludeList.some(c => c.replace(/\s+/g, '') === '2차심리검사')}
+                  onChange={togglePsychologicalCheck}
+                  style={{ 
+                    width: '18px', 
+                    height: '18px', 
+                    accentColor: 'var(--brass)', 
+                    cursor: 'pointer',
+                    margin: 0
+                  }}
+                />
+                <span>2차 심리검사 등 정밀검사를 받으셨나요?</span>
+              </label>
+            </div>
+
             <div style={{ height: '1px', background: 'var(--border)', margin: '24px 0' }}></div>
 
-            {/* 제외 조건 칩 */}
+            {/* 제외 조건 칩 (2차 심리검사 제외) */}
             <div className="chip-row">
-              {excludeList.map(cond => (
+              {excludeList.filter(cond => cond.replace(/\s+/g, '') !== '2차심리검사').map(cond => (
                 <button 
                   key={cond} 
                   className="chip selected"
@@ -531,7 +683,7 @@ export function SearchPage() {
             {showCommonExclusions && (
               <div className="chip-box open">
                 <div className="chip-row">
-                  {commonExclusions.map(cond => (
+                  {commonExclusions.filter(cond => cond.replace(/\s+/g, '') !== '2차심리검사').map(cond => (
                     <button 
                       key={cond} 
                       className={`chip ${excludeList.includes(cond) ? 'selected' : ''}`}
@@ -667,7 +819,7 @@ export function SearchPage() {
 
       <footer>
         <span>MILPICK</span>
-        <span>{apiStatus}</span>
+        <span>가장 스마트한 군사특기 찾기</span>
       </footer>
     </>
   );
