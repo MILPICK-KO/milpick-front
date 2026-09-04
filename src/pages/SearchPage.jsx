@@ -28,12 +28,14 @@ export function SearchPage() {
   } = useSearch();
 
   const REC_TYPES = ['전체', '기술행정병', '전문특기병', '취업맞춤특기병'];
+  const SPECIAL_REC_TYPES = ['어학병', '카투사'];
   const REC_TYPE_DESCRIPTIONS = {
-    '전체': '어학병을 제외한 모든 모집분류에서 검색해요.',
+    '전체': '어학병, 카투사를 제외한 모든 모집분류에서 검색해요.',
     '기술행정병': '본인이 보유한 자격증, 면허, 전공학과 등을 바탕으로 지원할 수 있어요.\n전문특기병만큼 선발이 까다롭진 않지만, 일부 특기는 전공뿐만 아니라 자격증을 요구하기도 해요.',
     '전문특기병': '자격증이나 지원 분야와 관련된 전공을 필요로 하는 고도의 전문 임무를 수행해요.\n선발 과정에 시험과 면접이 포함될 수 있어요.',
+    '취업맞춤특기병': '고졸 이하자 등이 입대 전 본인의 적성에 맞는 기술훈련을 받고 이와 연계된 분야의 기술병으로 복무하는 제도에요.\n이를 통해 취업 등 안정적인 사회진출을 지원해요.',
     '어학병': '대한민국 육군 내의 외국어 통역, 번역 및 외국어를 수반한 행정업무를 수행해요.\n해당 언어에 대한 자격증, 전공 혹은 유학 경험을 요구해요.',
-    '취업맞춤특기병': '고줄 이하자 등이 입대 전 본인의 적성에 맞는 기술훈련을 받고 이와 연계된 분야의 기술병으로 복무하는 제도에요.\n이를 통해 취업 등 안정적인 사회진출을 지원해요.',
+    '카투사': '카투사는 미8군에 증강된 한국군 육군 요원(한국군지원단 소속)으로 한미연합 관련 임무를 수행해요.\n영어 어학성적이 있어야만 지원이 가능해요.',
     'default': '지원하고자 하는 모집 분류를 먼저 선택해 주세요.'
   };
 
@@ -42,12 +44,12 @@ export function SearchPage() {
   const toggleRecType = (type) => {
     setActiveDescType(type);
 
-    if (type === '어학병') {
-      if (recruitmentTypes.includes('어학병')) {
+    if (type === '어학병' || type === '카투사') {
+      if (recruitmentTypes.includes(type)) {
         setRecruitmentTypes([]);
         setActiveDescType('default');
       } else {
-        setRecruitmentTypes(['어학병']);
+        setRecruitmentTypes([type]);
       }
       return;
     }
@@ -60,7 +62,7 @@ export function SearchPage() {
         setRecruitmentTypes(['전체']);
       }
     } else {
-      let newTypes = recruitmentTypes.filter(t => t !== '전체' && t !== '어학병');
+      let newTypes = recruitmentTypes.filter(t => t !== '전체' && t !== '어학병' && t !== '카투사');
       if (newTypes.includes(type)) {
         newTypes = newTypes.filter(t => t !== type);
         if (newTypes.length === 0) setActiveDescType('default');
@@ -75,7 +77,7 @@ export function SearchPage() {
   const [showAllFields, setShowAllFields] = useState(false);
   const [showCommonExclusions, setShowCommonExclusions] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const isOnlyLanguage = recruitmentTypes.length === 1 && recruitmentTypes[0] === '어학병';
+  const isSpecialRecType = recruitmentTypes.length === 1 && (recruitmentTypes[0] === '어학병' || recruitmentTypes[0] === '카투사');
   
   useEffect(() => {
     if (recruitmentTypes.length === 0) {
@@ -83,8 +85,8 @@ export function SearchPage() {
     }
   }, [recruitmentTypes]);
 
-  const showStep2 = unlockedStep >= 2 && !isOnlyLanguage;
-  const showStep3 = unlockedStep >= 3 || (unlockedStep >= 2 && isOnlyLanguage);
+  const showStep2 = unlockedStep >= 2 && !isSpecialRecType;
+  const showStep3 = unlockedStep >= 3 || (unlockedStep >= 2 && isSpecialRecType);
 
   const step2Ref = useRef(null);
   const step3Ref = useRef(null);
@@ -104,10 +106,10 @@ export function SearchPage() {
 
     if (unlockedStep === 2 && showStep2) {
       if (step2Ref.current) setTimeout(() => step2Ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-    } else if (showStep3 && (unlockedStep === 3 || (unlockedStep === 2 && isOnlyLanguage))) {
+    } else if (showStep3 && (unlockedStep === 3 || (unlockedStep === 2 && isSpecialRecType))) {
       if (step3Ref.current) setTimeout(() => step3Ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
-  }, [unlockedStep, showStep2, showStep3, isOnlyLanguage, navType]);
+  }, [unlockedStep, showStep2, showStep3, isSpecialRecType, navType]);
 
   const handleRecommend = async (e) => {
     e.preventDefault();
@@ -141,7 +143,8 @@ export function SearchPage() {
   };
 
   const handleSearch = async (relationType = 'direct') => {
-    if (selectedFields.length === 0 && excludeList.length === 0) {
+    const isSpecial = isSpecialRecType || recruitmentTypes.includes('어학병') || recruitmentTypes.includes('카투사');
+    if (!isSpecial && selectedFields.length === 0 && excludeList.length === 0) {
       alert("검색하려면 최소 하나 이상의 '분야' 또는 '제외 조건'을 선택해야 합니다.");
       return;
     }
@@ -200,12 +203,13 @@ export function SearchPage() {
   };
 
   const renderSelectedSummary = () => {
-    if (selectedFields.length === 0 && excludeList.length === 0 && !height && !weight && !grade && !vision) {
+    if (recruitmentTypes.length === 0 && selectedFields.length === 0 && excludeList.length === 0 && !height && !weight && !grade && !vision) {
       return null;
     }
     return (
       <div className="selected-summary">
         <strong>검색 조건:</strong>
+        {recruitmentTypes.length > 0 && <span> 모집분류({recruitmentTypes.join(', ')})</span>}
         {selectedFields.length > 0 && <span> 분야({selectedFields.join(', ')})</span>}
         {excludeList.length > 0 && <span> 제외({excludeList.join(', ')})</span>}
         {height && <span> 신장({height}cm)</span>}
@@ -280,43 +284,51 @@ export function SearchPage() {
                 </div>
               ))}
               
-              <div 
-                className="rec-type-card"
-                onClick={() => toggleRecType('어학병')}
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between',
-                  padding: '20px',
-                  background: recruitmentTypes.includes('어학병') ? 'var(--match-bg)' : 'transparent',
-                  borderRadius: '16px',
-                  border: recruitmentTypes.includes('어학병') ? '2px solid var(--match)' : '1px solid var(--border)',
-                  boxShadow: recruitmentTypes.includes('어학병') ? '0 4px 12px rgba(46, 92, 59, 0.15)' : '0 2px 8px rgba(0,0,0,0.03)',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}
-              >
-                <button
-                  type="button"
-                  className={`chip ${recruitmentTypes.includes('어학병') ? 'selected' : ''}`}
-                  style={{
-                    pointerEvents: 'none', 
-                    margin: 0, 
-                    flexShrink: 0,
-                    marginRight: '20px',
-                    border: '1px solid var(--primary)',
-                    // color: recruitmentTypes.includes('어학병') ? '#fff' : 'var(--primary)',
-                    fontWeight: '600'
+              <div style={{ 
+                height: '1px', 
+                background: 'var(--border)', 
+                margin: '8px 0 6px 0' 
+              }} />
+
+              {SPECIAL_REC_TYPES.map(type => (
+                <div 
+                  key={type}
+                  className="rec-type-card"
+                  onClick={() => toggleRecType(type)}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    padding: '20px',
+                    background: recruitmentTypes.includes(type) ? 'var(--match-bg)' : 'transparent',
+                    borderRadius: '16px',
+                    border: recruitmentTypes.includes(type) ? '2px solid var(--match)' : '1px solid var(--border)',
+                    boxShadow: recruitmentTypes.includes(type) ? '0 4px 12px rgba(46, 92, 59, 0.15)' : '0 2px 8px rgba(0,0,0,0.03)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
-                  어학병
-                </button>
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <div style={{ fontSize: '14px', color: 'var(--text-dim)', whiteSpace: 'pre-wrap', wordBreak: 'keep-all', lineHeight: '1.5' }}>
-                    {REC_TYPE_DESCRIPTIONS['어학병']}
+                  <button
+                    type="button"
+                    className={`chip ${recruitmentTypes.includes(type) ? 'selected' : ''}`}
+                    style={{
+                      pointerEvents: 'none', 
+                      margin: 0, 
+                      flexShrink: 0,
+                      marginRight: '20px',
+                      border: '1px solid var(--primary)',
+                      fontWeight: '600'
+                    }}
+                  >
+                    {type}
+                  </button>
+                  <div style={{ flex: 1, textAlign: 'left' }}>
+                    <div style={{ fontSize: '14px', color: 'var(--text-dim)', whiteSpace: 'pre-wrap', wordBreak: 'keep-all', lineHeight: '1.5' }}>
+                      {REC_TYPE_DESCRIPTIONS[type]}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
             
             {unlockedStep === 1 && (
