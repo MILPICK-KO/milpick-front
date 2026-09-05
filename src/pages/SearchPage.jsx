@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigationType } from 'react-router-dom';
 import { useSearch } from '../context/SearchContext';
 import { ResultCard } from '../components/ResultCard';
+import { Footer } from '../components/Footer';
 import { config } from '../utils/config';
 
 const API_BASE_URL = config.API_BASE_URL;
@@ -27,6 +28,10 @@ export function SearchPage() {
     hasSearchedMajor, setHasSearchedMajor,
     unlockedStep, setUnlockedStep
   } = useSearch();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const GENERAL_SUB_TYPES = ['기술행정병', '전문특기병', '취업맞춤특기병'];
   const SPECIAL_REC_TYPES = ['어학병', '카투사'];
@@ -317,7 +322,13 @@ export function SearchPage() {
     <>
       <header className="hero">
         <div className="hero-inner">
-          <h1 className="brand">MIL<span>PICK</span></h1>
+          <h1 
+            className="brand" 
+            style={{ cursor: 'pointer' }}
+            onClick={() => window.location.href = config.LINK}
+          >
+            MIL<span>PICK</span>
+          </h1>
           <p className="tagline">가장 스마트한 군사특기 찾기</p>
         </div>
       </header>
@@ -880,10 +891,7 @@ export function SearchPage() {
 
       </div>
 
-      <footer>
-        <span>MILPICK</span>
-        <span>가장 스마트한 군사특기 찾기</span>
-      </footer>
+      <Footer />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { formatText } from '../utils/formatters';
+import { Footer } from '../components/Footer';
 
 const renderDutyDescription = (text) => {
   if (!text) return '없음';
@@ -103,6 +104,8 @@ export function DetailPage() {
               )}
           </div>
       </div>
+
+      <Footer />
     </>
   );
 }
