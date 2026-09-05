@@ -1,0 +1,55 @@
+/* ========================================================
+   Footer Styles
+   ======================================================== */
+
+.landing-footer {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 60px auto 0;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 48px 24px 64px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  box-sizing: border-box;
+}
+
+.landing-container .landing-footer {
+  margin-top: 0;
+}
+
+.landing-footer-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.landing-footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.landing-footer-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.landing-footer-links a:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+@media (max-width: 768px) {
+  .landing-footer-inner {
+    flex-direction: column;
+  }
+}

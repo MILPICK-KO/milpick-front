@@ -1,0 +1,80 @@
+/* ========================================================
+   MILPICK Global Theme Variables & Base Styles
+   ======================================================== */
+
+:root {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #f0efe9;
+  --border: #e4e2d8;
+  --border-strong: #d3d0c2;
+  --text: #262620;
+  --text-dim: #6b6a5f;
+  --text-faint: #a3a195;
+  --brass: #9c7a1e;
+  --brass-fill: #b8901f;
+  --brass-bg: #fbf3de;
+  --alert: #b3492f;
+  --alert-bg: #fbeee9;
+  --match: #3f7a50;
+  --match-bg: #edf5ee;
+  --school: #3f627a;
+  --school-bg: #edf5ee;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --display: 'Oswald', sans-serif;
+  --body: 'Noto Sans KR', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brass-bg);
+  color: var(--text);
+}
+
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 20px 100px;
+}
+
+/* Common Brand Logo */
+.landing-brand {
+  font-family: var(--display);
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--text);
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+
+.landing-brand:hover {
+  opacity: 0.85;
+}
+
+.landing-brand span {
+  color: var(--brass);
+}
+
+/* Common Keyframe Animations */
+@keyframes fadeSlideDown {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
