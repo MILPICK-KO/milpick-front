@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { config } from '../utils/config';
 
 const SearchContext = createContext();
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = config.API_BASE_URL;
 
 export function SearchProvider({ children }) {
   // Global API states

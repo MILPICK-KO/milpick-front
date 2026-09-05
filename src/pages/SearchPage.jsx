@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigationType } from 'react-router-dom';
 import { useSearch } from '../context/SearchContext';
 import { ResultCard } from '../components/ResultCard';
+import { config } from '../utils/config';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = config.API_BASE_URL;
 
 export function SearchPage() {
   const {
@@ -150,6 +151,7 @@ export function SearchPage() {
   const [showAllFields, setShowAllFields] = useState(false);
   const [showCommonExclusions, setShowCommonExclusions] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showPsychTooltip, setShowPsychTooltip] = useState(false);
   const isSpecialRecType = recruitmentTypes.length === 1 && (recruitmentTypes[0] === '어학병' || recruitmentTypes[0] === '카투사');
   
   useEffect(() => {
@@ -605,7 +607,7 @@ export function SearchPage() {
             </div>
 
             {/* 2차 심리검사 등 정밀검사 여부 체크박스 */}
-            <div style={{ marginTop: '18px' }}>
+            <div style={{ marginTop: '18px', display: 'flex', alignItems: 'center' }}>
               <label 
                 style={{ 
                   display: 'inline-flex', 
@@ -633,6 +635,67 @@ export function SearchPage() {
                 />
                 <span>2차 심리검사 등 정밀검사를 받으셨나요?</span>
               </label>
+
+              <div style={{ position: 'relative', display: 'inline-block', marginLeft: '6px' }}>
+                <button 
+                  type="button"
+                  style={{
+                    background: 'var(--surface-2)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-dim)',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    cursor: 'help',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0
+                  }}
+                  onMouseEnter={() => setShowPsychTooltip(true)}
+                  onMouseLeave={() => setShowPsychTooltip(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowPsychTooltip(prev => !prev);
+                  }}
+                >
+                  ?
+                </button>
+                
+                {showPsychTooltip && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 'calc(100% + 8px)',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'var(--text)',
+                    color: 'var(--bg)',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    lineHeight: '1.5',
+                    width: '260px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    zIndex: 100,
+                    textAlign: 'left',
+                    wordBreak: 'keep-all'
+                  }}>
+                    1차 검사에서 추가 확인이 필요한 사람을 대상으로 임상심리사가 진행하는 심층 면담 및 검사를 말해요.<br/>기억이 나지 않는다면 체크하지 않아도 돼요.
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      borderWidth: '6px',
+                      borderStyle: 'solid',
+                      borderColor: 'var(--text) transparent transparent transparent'
+                    }} />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div style={{ height: '1px', background: 'var(--border)', margin: '24px 0' }}></div>
