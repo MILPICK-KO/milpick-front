@@ -300,7 +300,7 @@ export function SearchPage() {
         {height && <span> 신장({height}cm)</span>}
         {weight && <span> 체중({weight}kg)</span>}
         {grade && <span> 신체등급({grade}급)</span>}
-        {vision && <span> 시력({vision})</span>}
+        {vision && <span> (교정)시력({vision})</span>}
       </div>
     );
   };
@@ -595,7 +595,7 @@ export function SearchPage() {
                 <input type="number" id="weight-input" value={weight} onChange={e => setWeight(e.target.value)} />
               </div>
               <div className="cond-field">
-                <label htmlFor="vision-input">시력</label>
+                <label htmlFor="vision-input">(교정)시력</label>
                 <input type="number" id="vision-input" value={vision} onChange={e => setVision(e.target.value)} />
               </div>
               <div className="cond-field">
