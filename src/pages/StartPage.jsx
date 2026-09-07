@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { config } from '../utils/config';
+import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 
 export function StartPage() {
@@ -15,27 +15,7 @@ export function StartPage() {
   return (
     <div className="landing-container">
       {/* 1. Sticky Navigation Header */}
-      <header className="landing-header">
-        <div className="landing-header-inner">
-          <div className="landing-brand" onClick={() => window.location.href = config.LINK}>
-            MIL<span>PICK</span>
-          </div>
-          <div className="landing-header-actions">
-            <button className="landing-nav-link" onClick={() => scrollToSection('problems')}>
-              제안배경
-            </button>
-            <button className="landing-nav-link" onClick={() => scrollToSection('features')}>
-              핵심기능
-            </button>
-            <button className="landing-nav-link" onClick={() => scrollToSection('impact')}>
-              기대효과
-            </button>
-            <button className="landing-btn-sm" onClick={() => navigate('/search')}>
-              특기 검색하기 →
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header onSectionClick={scrollToSection} />
 
       {/* 2. Hero Section */}
       <section className="landing-hero">
@@ -184,7 +164,7 @@ export function StartPage() {
             <h3 className="impact-card-title">육군 전투력 및 업무 효율성 증대</h3>
             <p className="impact-card-desc">
               적재적소에 실무 능력을 갖춘 전공자가 배치되어 전반적인 업무 효율을 끌어올리고,
-              더 나아가 대한민국 육군의 전투력을 증진해요.
+              더 나아가 대한민국 육군의 전투력을 증진시켜요.
             </p>
           </div>
         </div>
@@ -198,7 +178,7 @@ export function StartPage() {
             전공이나 관심 분야만 입력하고 내게 딱 맞는 군사특기를 찾아봐요.
           </p>
           <button className="landing-btn-primary" onClick={() => navigate('/search')}>
-            특기 검색 시작하기 →
+            내게 맞는 군 특기 찾기 →
           </button>
         </div>
       </section>

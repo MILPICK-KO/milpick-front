@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { formatText } from '../utils/formatters';
+import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 
 const renderDutyDescription = (text) => {
@@ -32,20 +33,19 @@ export function DetailPage() {
 
   return (
     <>
-      <header className="hero" style={{ padding: '40px 20px', minHeight: 'auto' }}>
-        <div className="hero-inner" style={{ textAlign: 'left' }}>
-           <button 
-             onClick={() => navigate(-1)} 
-             className="link-btn"
-             style={{ marginBottom: '20px', display: 'inline-block' }}
-           >
-             ← 뒤로 가기
-           </button>
-           <div className="eyebrow"><span className="tick"></span>상세 정보</div>
-           <h2 className="brand" style={{ fontSize: '28px', marginTop: '10px' }}>{result.specialty_name}</h2>
+      <Header />
+      <div className="wrap" style={{ paddingTop: '32px' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <button 
+            onClick={() => navigate(-1)} 
+            className="link-btn"
+            style={{ marginBottom: '14px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}
+          >
+            ← 뒤로 가기
+          </button>
+          <div className="eyebrow"><span className="tick"></span>상세 정보</div>
+          <h2 style={{ fontSize: '28px', marginTop: '6px', fontFamily: 'var(--display)', color: 'var(--text)', fontWeight: 700 }}>{result.specialty_name}</h2>
         </div>
-      </header>
-      <div className="wrap">
           <div className="result-card" style={{ cursor: 'default', borderBottom: 'none' }}>
               <div className="rec-type">{result.recruitment_type}</div>
               <div className="row-top">
@@ -91,7 +91,7 @@ export function DetailPage() {
                 </div>
               )}
 
-              {result.recruitment_type == "취업맞춤특기병" && (
+              {result.recruitment_type === "취업맞춤특기병" && (
                 <div className="warn school" style={{ marginTop: '10px' }}>
                   <span className="mark">안내</span> 해당 특기는 고등학교 졸업이하 학력 또는 교육부장관이 인정하는 동등 학력을 소지한 사람만 지원할 수 있어요. 자세한 내용은 병무청 모집요강을 확인하세요.
                 </div>

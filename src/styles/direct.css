@@ -1,0 +1,214 @@
+/* ========================================================
+   Direct / Keyword Search Page Styles
+   ======================================================== */
+
+.direct-search-page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+.direct-container {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  flex: 1;
+}
+
+.direct-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.direct-eyebrow {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--brass);
+  background: var(--brass-bg);
+  border: 1px solid rgba(156, 122, 30, 0.22);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.direct-title {
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+}
+
+.direct-subtitle {
+  font-size: 14.5px;
+  color: var(--text-dim);
+  margin: 0 auto;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Search Bar Box */
+.direct-search-box {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 6px 8px 6px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  margin-bottom: 24px;
+}
+
+.direct-search-box:focus-within {
+  border-color: var(--brass);
+  box-shadow: 0 6px 24px rgba(156, 122, 30, 0.12);
+}
+
+.direct-search-icon {
+  font-size: 18px;
+  color: var(--text-faint);
+  margin-right: 12px;
+  user-select: none;
+}
+
+.direct-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+  font-family: var(--body);
+  color: var(--text);
+  padding: 10px 0;
+  min-width: 0;
+}
+
+.direct-search-input::placeholder {
+  color: var(--text-faint);
+  font-size: 14.5px;
+}
+
+.direct-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.direct-clear-btn:hover {
+  color: var(--text);
+}
+
+/* Recruitment Type Filter Tabs */
+.direct-filter-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 24px;
+  scrollbar-width: none;
+}
+
+.direct-filter-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.direct-tab-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.direct-tab-btn:hover {
+  border-color: var(--brass);
+  color: var(--text);
+}
+
+.direct-tab-btn.active {
+  background: var(--brass-bg);
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+/* Results Header */
+.direct-results-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.direct-results-count {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.direct-results-count b {
+  color: var(--brass);
+}
+
+/* Empty & Loading States */
+.direct-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: 18px;
+  color: var(--text-dim);
+}
+
+.direct-empty-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.direct-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.direct-empty-desc {
+  font-size: 13.5px;
+  color: var(--text-faint);
+  margin: 0 auto 20px;
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .direct-container {
+    padding: 24px 16px 60px;
+  }
+  .direct-search-box {
+    padding: 4px 6px 4px 14px;
+  }
+}

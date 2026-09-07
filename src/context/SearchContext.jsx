@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { config } from '../utils/config';
 
 const SearchContext = createContext();
@@ -6,6 +6,8 @@ const SearchContext = createContext();
 const API_BASE_URL = config.API_BASE_URL;
 
 export function SearchProvider({ children }) {
+  const isInitialized = useRef(false);
+
   // Global API states
   const [apiStatus, setApiStatus] = useState('API 연결 확인 중…');
   const [apiError, setApiError] = useState(false);
@@ -34,8 +36,11 @@ export function SearchProvider({ children }) {
   const [hasSearchedMajor, setHasSearchedMajor] = useState(false);
   const [unlockedStep, setUnlockedStep] = useState(1);
 
-  // Initialize API data once when app loads
+  // Initialize API data once when app loads (guarded against duplicate invocations)
   useEffect(() => {
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
     const initData = async () => {
       try {
         const [fieldsRes, exclusionsRes] = await Promise.all([

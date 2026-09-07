@@ -3,6 +3,9 @@
    ======================================================== */
 
 @import './styles/global.css';
+@import './styles/header.css';
 @import './styles/search.css';
 @import './styles/landing.css';
 @import './styles/footer.css';
+@import './styles/direct.css';
+@import './styles/modal.css';

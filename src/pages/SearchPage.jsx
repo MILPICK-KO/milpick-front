@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigationType } from 'react-router-dom';
 import { useSearch } from '../context/SearchContext';
+import { useAlert } from '../context/AlertContext';
 import { ResultCard } from '../components/ResultCard';
+import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { config } from '../utils/config';
 
 const API_BASE_URL = config.API_BASE_URL;
 
 export function SearchPage() {
+  const { showAlert } = useAlert();
   const {
     setApiError, apiError,
     allFields, commonExclusions,
@@ -15,7 +18,7 @@ export function SearchPage() {
     majorInput, setMajorInput,
     recommendedFields, setRecommendedFields,
     selectedFields, setSelectedFields,
-    excludeInput, setExcludeInput,
+    setExcludeInput,
     excludeList, setExcludeList,
     height, setHeight,
     weight, setWeight,
@@ -235,7 +238,10 @@ export function SearchPage() {
   const handleSearch = async (relationType = 'direct') => {
     const isSpecial = isSpecialRecType || recruitmentTypes.includes('어학병') || recruitmentTypes.includes('카투사');
     if (!isSpecial && selectedFields.length === 0 && excludeList.length === 0) {
-      alert("검색하려면 최소 하나 이상의 '분야' 또는 '제외 조건'을 선택해야 합니다.");
+      showAlert("검색하려면 최소 하나 이상의 '분야' 또는 '제외 조건'을 선택해야 합니다.", {
+        title: '검색 조건 안내',
+        type: 'warning'
+      });
       return;
     }
 
@@ -288,7 +294,10 @@ export function SearchPage() {
       setApiError(false);
     } catch (err) {
       console.error(err);
-      alert("검색 중 오류가 발생했습니다: " + err.message);
+      showAlert(`검색 중 오류가 발생했습니다.\n(${err.message})`, {
+        title: '검색 오류',
+        type: 'error'
+      });
     }
   };
 
@@ -320,18 +329,14 @@ export function SearchPage() {
 
   return (
     <>
-      <header className="hero">
-        <div className="hero-inner">
-          <h1 
-            className="brand" 
-            style={{ cursor: 'pointer' }}
-            onClick={() => window.location.href = config.LINK}
-          >
-            MIL<span>PICK</span>
-          </h1>
-          <p className="tagline">가장 스마트한 군사특기 찾기</p>
-        </div>
-      </header>
+      <Header />
+
+      <div style={{ textAlign: 'center', padding: '40px 20px 16px' }}>
+        <h1 className="direct-title">전공으로 검색</h1>
+        <p className="direct-subtitle">
+          모집분류, 전공, 관심 분야 및 신체조건으로 내게 맞는 군 특기를 찾아요.
+        </p>
+      </div>
 
       <div className="wrap">
         {apiError && (
